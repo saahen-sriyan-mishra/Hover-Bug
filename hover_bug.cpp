@@ -4,7 +4,7 @@
 #include <ctime>
 
 int x = 100, y = 100;
-int dx = 10, dy = 10;
+int dx = 2, dy = 2;
 std::string displayText = "Hover-Bug";
 HWND hwndMain = NULL;
 
@@ -18,9 +18,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             RECT screenRect;
             GetWindowRect(GetDesktopWindow(), &screenRect);
 
-            if (rand() % 5 == 0) {
-                dx = (rand() % 15) - 7;
-                dy = (rand() % 15) - 7;
+            if (rand() % 100 == 0) { // Reduced frequency of direction changes
+                dx = (rand() % 5) - 2; // Reduced maximum speed
+                dy = (rand() % 5) - 2;
             }
 
             x += dx;
