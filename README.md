@@ -61,16 +61,6 @@ g++ -std=c++11 -O2 main.cpp -o HoverBug_Launcher.exe -luser32 -lgdi32
 MIT License - Free for personal and commercial use.
 
 
-
 ## 🐞 Found a bug? Open an Issue
-
-## Key Sections Explained:
-1. **Visual Header**: GIF demo + catchy tagline
-2. **Features**: Bullet points with emojis for scanability
-3. **Installation**: 3-step simple instructions
-4. **Usage**: Code blocks for CLI lovers
-5. **Building**: For contributors
-6. **Footer**: Call-to-action + support links
-
 
   
