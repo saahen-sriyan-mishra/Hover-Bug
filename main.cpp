@@ -49,8 +49,9 @@ void TerminateHoverBug() {
 void LaunchHoverBug(const std::string& text) {
     TerminateHoverBug();
     
-    STARTUPINFO si = { sizeof(si) };
-    PROCESS_INFORMATION pi;
+    STARTUPINFO si = {};
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi = {};
     
     std::string commandLine = "Hover_Bug.exe " + text;
     

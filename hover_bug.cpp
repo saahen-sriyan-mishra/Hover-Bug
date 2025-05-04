@@ -2,11 +2,28 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 
 int x = 100, y = 100;
 int dx = 2, dy = 2;
 std::string displayText = "Hover-Bug";
 HWND hwndMain = NULL;
+
+// Color animation variables
+int currentColorIndex = 0;
+float colorPhase = 0.0f;
+const float colorSpeed = 0.01f;
+COLORREF currentColor = RGB(255, 255, 255);
+
+// Function to generate smoothly transitioning colors
+COLORREF GetAnimatedColor(float phase) {
+    // This creates a smooth color transition through the color spectrum
+    int r = static_cast<int>((sin(phase) * 127) + 128);
+    int g = static_cast<int>((sin(phase + 2.0f * 3.14159f / 3.0f) * 127) + 128);
+    int b = static_cast<int>((sin(phase + 4.0f * 3.14159f / 3.0f) * 127) + 128);
+    
+    return RGB(r, g, b);
+}
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -30,6 +47,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (y < 0 || y + 100 > screenRect.bottom) dy = -dy;
 
             SetWindowPos(hwnd, NULL, x, y, 300, 100, SWP_NOZORDER | SWP_NOACTIVATE);
+            
+            // Update color animation
+            colorPhase += colorSpeed;
+            if (colorPhase > 2 * 3.14159f) {
+                colorPhase -= 2 * 3.14159f;
+            }
+            currentColor = GetAnimatedColor(colorPhase);
+            
+            // Force a repaint to show the new color
+            InvalidateRect(hwnd, NULL, TRUE);
             return 0;
         }
 
@@ -39,7 +66,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             RECT rect;
             GetClientRect(hwnd, &rect);
             SetBkMode(hdc, TRANSPARENT);
-            SetTextColor(hdc, RGB(255, 255, 255));
+            SetTextColor(hdc, currentColor);
             DrawText(hdc, displayText.c_str(), -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             EndPaint(hwnd, &ps);
             return 0;
