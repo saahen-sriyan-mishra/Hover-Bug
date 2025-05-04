@@ -23,7 +23,7 @@ A lightweight Windows utility that displays customizable floating text with smoo
 
 ## 📥 Installation
 
-1. Download the latest release from [Releases]([https://github.com/yourname/HoverBug/releases](https://github.com/saahen-sriyan-mishra/Hover-Bug/releases)
+1. Download the latest release from [Releases]([https://github.com/saahen-sriyan-mishra/Hover-Bug/releases](https://github.com/saahen-sriyan-mishra/Hover-Bug/releases)
 2. Extract `Hover-Bug_v2.3.zip`
 3. Run `main.exe`
 
