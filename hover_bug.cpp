@@ -1,4 +1,3 @@
-// Accept input
 #include <windows.h>
 #include <string>
 #include <cstdlib>
@@ -48,12 +47,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         
         case WM_COPYDATA: {
             PCOPYDATASTRUCT pCopyData = (PCOPYDATASTRUCT)lParam;
-            if (pCopyData->dwData == 1) { // Our custom identifier
+            if (pCopyData->dwData == 1) {
                 displayText = std::string((char*)pCopyData->lpData, pCopyData->cbData);
                 InvalidateRect(hwnd, NULL, TRUE);
             }
             return TRUE;
         }
+        
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+            return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -64,10 +67,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int) {
     // Check for existing instance
     hwndMain = FindWindow("FloatingWindow", NULL);
     if (hwndMain) {
-        // If instance exists, send new text via WM_COPYDATA
         if (lpCmdLine && strlen(lpCmdLine) > 0) {
             COPYDATASTRUCT cds;
-            cds.dwData = 1; // Custom identifier
+            cds.dwData = 1;
             cds.cbData = strlen(lpCmdLine) + 1;
             cds.lpData = (void*)lpCmdLine;
             SendMessage(hwndMain, WM_COPYDATA, (WPARAM)NULL, (LPARAM)&cds);
@@ -88,10 +90,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int) {
 
     RegisterClass(&wc);
 
-    hwndMain = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED, CLASS_NAME, NULL, WS_POPUP,
-                             x, y, 300, 100, NULL, NULL, hInstance, NULL);
+    // Create window with additional style to hide from taskbar
+    hwndMain = CreateWindowEx(
+        WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW,  // Added WS_EX_TOOLWINDOW
+        CLASS_NAME, 
+        NULL, 
+        WS_POPUP,
+        x, y, 300, 100, 
+        NULL, NULL, hInstance, NULL);
 
     if (!hwndMain) return 0;
+
+    // Make window non-interactive
+    SetWindowLong(hwndMain, GWL_EXSTYLE, 
+        GetWindowLong(hwndMain, GWL_EXSTYLE) | WS_EX_TRANSPARENT | WS_EX_LAYERED);
 
     SetLayeredWindowAttributes(hwndMain, RGB(0, 0, 0), 0, LWA_COLORKEY);
     ShowWindow(hwndMain, SW_SHOWNOACTIVATE);

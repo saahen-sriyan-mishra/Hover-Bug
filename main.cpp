@@ -1,43 +1,85 @@
 #include <windows.h>
 #include <string>
+#include <tlhelp32.h>
+#include <cstring> // for strcmp
 
 #define ID_EDIT 101
-#define ID_BUTTON 102
+#define ID_START_BUTTON 102
+#define ID_STOP_BUTTON 103
 
 HWND hEdit;
 
+DWORD FindHoverBugProcess() {
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    // Use 0 instead of NULL for the process ID parameter
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+    if (snapshot == INVALID_HANDLE_VALUE) {
+        return 0;
+    }
+
+    if (Process32First(snapshot, &entry)) {
+        do {
+            if (strcmp(entry.szExeFile, "Hover_Bug.exe") == 0) {
+                DWORD pid = entry.th32ProcessID;
+                CloseHandle(snapshot);
+                return pid;
+            }
+        } while (Process32Next(snapshot, &entry));
+    }
+    
+    CloseHandle(snapshot);
+    return 0;
+}
+
+void TerminateHoverBug() {
+    DWORD pid = FindHoverBugProcess();
+    if (pid != 0) {
+        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+        if (hProcess != NULL) {
+            TerminateProcess(hProcess, 0);
+            CloseHandle(hProcess);
+        }
+    }
+}
+
 void LaunchHoverBug(const std::string& text) {
-    // Use CreateProcess instead of system to avoid command prompt
+    TerminateHoverBug(); // Kill existing instance first
+    
     STARTUPINFO si = { sizeof(si) };
     PROCESS_INFORMATION pi;
     
     std::string commandLine = "Hover_Bug.exe " + text;
     
-    if (CreateProcess(
-        NULL,                           // No module name (use command line)
-        (LPSTR)commandLine.c_str(),     // Command line
-        NULL,                           // Process handle not inheritable
-        NULL,                           // Thread handle not inheritable
-        FALSE,                          // Set handle inheritance to FALSE
-        CREATE_NO_WINDOW,               // No creation flags (or use CREATE_NO_WINDOW)
-        NULL,                           // Use parent's environment block
-        NULL,                           // Use parent's starting directory 
-        &si,                            // Pointer to STARTUPINFO structure
-        &pi                             // Pointer to PROCESS_INFORMATION structure
-    )) {
-        // Close process and thread handles
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    }
+    CreateProcess(
+        NULL,
+        const_cast<LPSTR>(commandLine.c_str()), // Safe cast as we won't modify it
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si,
+        &pi
+    );
+    
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_COMMAND:
-            if (LOWORD(wParam) == ID_BUTTON) {
+            if (LOWORD(wParam) == ID_START_BUTTON) {
                 char buffer[256];
                 GetWindowText(hEdit, buffer, 256);
                 LaunchHoverBug(buffer);
+            }
+            else if (LOWORD(wParam) == ID_STOP_BUTTON) {
+                TerminateHoverBug();
             }
             return 0;
 
@@ -59,14 +101,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(0, CLASS_NAME, "Hover-Bug Launcher", WS_OVERLAPPEDWINDOW,
-                               CW_USEDEFAULT, CW_USEDEFAULT, 300, 150,
+                               CW_USEDEFAULT, CW_USEDEFAULT, 300, 200,
                                NULL, NULL, hInstance, NULL);
 
     hEdit = CreateWindowEx(0, "EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER,
                            20, 20, 200, 20, hwnd, (HMENU)ID_EDIT, hInstance, NULL);
 
     CreateWindowEx(0, "BUTTON", "Start", WS_CHILD | WS_VISIBLE,
-                   20, 50, 100, 30, hwnd, (HMENU)ID_BUTTON, hInstance, NULL);
+                   20, 50, 100, 30, hwnd, (HMENU)ID_START_BUTTON, hInstance, NULL);
+
+    CreateWindowEx(0, "BUTTON", "Stop", WS_CHILD | WS_VISIBLE,
+                   140, 50, 100, 30, hwnd, (HMENU)ID_STOP_BUTTON, hInstance, NULL);
 
     ShowWindow(hwnd, SW_SHOW);
 
