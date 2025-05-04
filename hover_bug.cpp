@@ -7,6 +7,7 @@
 int x = 100, y = 100;
 int dx = 10, dy = 10;
 std::string displayText = "Hover-Bug";
+HWND hwndMain = NULL;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -44,6 +45,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             EndPaint(hwnd, &ps);
             return 0;
         }
+        
+        case WM_COPYDATA: {
+            PCOPYDATASTRUCT pCopyData = (PCOPYDATASTRUCT)lParam;
+            if (pCopyData->dwData == 1) { // Our custom identifier
+                displayText = std::string((char*)pCopyData->lpData, pCopyData->cbData);
+                InvalidateRect(hwnd, NULL, TRUE);
+            }
+            return TRUE;
+        }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -51,8 +61,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int) {
     srand(static_cast<unsigned>(time(nullptr)));
 
+    // Check for existing instance
+    hwndMain = FindWindow("FloatingWindow", NULL);
+    if (hwndMain) {
+        // If instance exists, send new text via WM_COPYDATA
+        if (lpCmdLine && strlen(lpCmdLine) > 0) {
+            COPYDATASTRUCT cds;
+            cds.dwData = 1; // Custom identifier
+            cds.cbData = strlen(lpCmdLine) + 1;
+            cds.lpData = (void*)lpCmdLine;
+            SendMessage(hwndMain, WM_COPYDATA, (WPARAM)NULL, (LPARAM)&cds);
+        }
+        return 0;
+    }
+
     if (lpCmdLine && strlen(lpCmdLine) > 0) {
-        displayText = lpCmdLine; // Use user input from main.exe
+        displayText = lpCmdLine;
     }
 
     const char CLASS_NAME[] = "FloatingWindow";
@@ -64,15 +88,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int) {
 
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED, CLASS_NAME, NULL, WS_POPUP,
-                               x, y, 300, 100, NULL, NULL, hInstance, NULL);
+    hwndMain = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED, CLASS_NAME, NULL, WS_POPUP,
+                             x, y, 300, 100, NULL, NULL, hInstance, NULL);
 
-    if (!hwnd) return 0;
+    if (!hwndMain) return 0;
 
-    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
-    ShowWindow(hwnd, SW_SHOWNOACTIVATE);
+    SetLayeredWindowAttributes(hwndMain, RGB(0, 0, 0), 0, LWA_COLORKEY);
+    ShowWindow(hwndMain, SW_SHOWNOACTIVATE);
 
-    SetTimer(hwnd, 1, 25, NULL);
+    SetTimer(hwndMain, 1, 25, NULL);
 
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {

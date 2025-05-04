@@ -7,8 +7,28 @@
 HWND hEdit;
 
 void LaunchHoverBug(const std::string& text) {
-    std::string command = "Hover_Bug.exe " + text;
-    system(command.c_str()); // Launch Hover_Bug with text argument
+    // Use CreateProcess instead of system to avoid command prompt
+    STARTUPINFO si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    
+    std::string commandLine = "Hover_Bug.exe " + text;
+    
+    if (CreateProcess(
+        NULL,                           // No module name (use command line)
+        (LPSTR)commandLine.c_str(),     // Command line
+        NULL,                           // Process handle not inheritable
+        NULL,                           // Thread handle not inheritable
+        FALSE,                          // Set handle inheritance to FALSE
+        CREATE_NO_WINDOW,               // No creation flags (or use CREATE_NO_WINDOW)
+        NULL,                           // Use parent's environment block
+        NULL,                           // Use parent's starting directory 
+        &si,                            // Pointer to STARTUPINFO structure
+        &pi                             // Pointer to PROCESS_INFORMATION structure
+    )) {
+        // Close process and thread handles
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
