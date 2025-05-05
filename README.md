@@ -2,7 +2,7 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/saahen-sriyan-mishra/Hover-Bug)
 
-![Demo](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZqNHhlN2Mwb3JmMDBvNm5kYjVkNTNmYnhxczRsMnBodGh1ejhhOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/R3GmjDoxCOIzg4k2fX/giphy.gif)
+[Demo](https://github.com/your-repo/path-to-file.mpc)
 
 A lightweight Windows utility that displays customizable floating text with smooth animations and color effects. Perfect for streamers, presenters, or desktop customization.
 
@@ -53,7 +53,7 @@ Requires:
 - Win32 API development headers
 ```bash
 g++ -std=c++11 -O2 -mwindows hover_bug.cpp -o Hover_Bug.exe -static -lgdi32 -lwinmm
-g++ -std=c++11 -O2 main.cpp -o HoverBug_Launcher.exe -luser32 -lgdi32
+g++ main.cpp -o main.exe -mwindows
 ```
 
 ## 📜 License
