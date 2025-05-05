@@ -3,7 +3,7 @@
 
 # 🚀 Hover-Bug: Floating Text Display
 
-![Demo GIF](https://giphy.com/gifs/c-gremlin-hover-bug-R3GmjDoxCOIzg4k2fX)
+![Demo](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZqNHhlN2Mwb3JmMDBvNm5kYjVkNTNmYnhxczRsMnBodGh1ejhhOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/R3GmjDoxCOIzg4k2fX/giphy.gif)
 
 A lightweight Windows utility that displays customizable floating text with smooth animations and color effects. Perfect for streamers, presenters, or desktop customization.
 
