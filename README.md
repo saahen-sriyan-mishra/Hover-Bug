@@ -53,11 +53,4 @@ Requires:
 g++ -std=c++11 -O2 -mwindows hover_bug.cpp -o Hover_Bug.exe -static -lgdi32 -lwinmm
 g++ -std=c++11 -O2 main.cpp -o HoverBug_Launcher.exe -luser32 -lgdi32
 ```
-
-## 📜 License
-MIT License - Free for personal and commercial use.
-
-
-## 🐞 Found a bug? Open an Issue
-
   
