@@ -42,15 +42,3 @@ Use "Stop" to remove it
   ```bash
   Hover_Bug.exe "Your Text Here"
   ```
-
-## 🛠️ Building from Source
-
-Requires:
-
-- MinGW/GCC (Windows)
-- Win32 API development headers
-```bash
-g++ -std=c++11 -O2 -mwindows hover_bug.cpp -o Hover_Bug.exe -static -lgdi32 -lwinmm
-g++ -std=c++11 -O2 main.cpp -o HoverBug_Launcher.exe -luser32 -lgdi32
-```
-  
