@@ -1,6 +1,3 @@
-[![GitHub All Releases](https://img.shields.io/github/downloads/saahen-sriyan-mishra/Hover-Bug/total?label=Total%20Downloads)](https://github.com/saahen-sriyan-mishra/Hover-Bug/releases)
-
-
 # 🚀 Hover-Bug: Floating Text Display
 
 ![Demo](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZqNHhlN2Mwb3JmMDBvNm5kYjVkNTNmYnhxczRsMnBodGh1ejhhOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/R3GmjDoxCOIzg4k2fX/giphy.gif)
